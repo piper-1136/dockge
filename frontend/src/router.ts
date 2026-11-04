@@ -7,6 +7,7 @@ import DashboardHome from "./pages/DashboardHome.vue";
 import Console from "./pages/Console.vue";
 import Compose from "./pages/Compose.vue";
 import ContainerTerminal from "./pages/ContainerTerminal.vue";
+import Ports from "./pages/Ports.vue";
 
 const Settings = () => import("./pages/Settings.vue");
 
@@ -62,6 +63,10 @@ const routes = [
                     {
                         path: "/console/:endpoint",
                         component: Console,
+                    },
+                    {
+                        path: "/ports",
+                        component: Ports,
                     },
                     {
                         path: "/settings",
