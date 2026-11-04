@@ -58,6 +58,7 @@ import {
     faChevronCircleRight,
     faChevronCircleDown,
     faFolder, faFolderOpen,
+    faServer,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -118,6 +119,7 @@ library.add(
     faChevronCircleDown,
     faFolder,
     faFolderOpen,
+    faServer,
 );
 
 export { FontAwesomeIcon };
