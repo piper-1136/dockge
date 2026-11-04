@@ -53,19 +53,20 @@
             </div>
             <div v-for="(agent, agentIndex) in agentStackList" :key="agentIndex" class="stack-list-inner">
                 <div
-                    v-if="$root.agentCount > 1" class="p-2 agent-select"
-                    @click="closedAgents.set(agent.endpoint, !closedAgents.get(agent.endpoint))"
+                    class="folder-header"
+                    :class="{ 'folder-open': !isAgentCollapsed(agent.endpoint), 'folder-dead': !isAgentOnline(agent.endpoint) }"
+                    @click="toggleAgent(agent.endpoint)"
                 >
-                    <span class="me-1">
-                        <font-awesome-icon v-show="closedAgents.get(agent.endpoint)" icon="chevron-circle-right" />
-                        <font-awesome-icon v-show="!closedAgents.get(agent.endpoint)" icon="chevron-circle-down" />
+                    <font-awesome-icon class="folder-icon" :icon="isAgentCollapsed(agent.endpoint) ? 'folder' : 'folder-open'" />
+                    <span class="folder-name">
+                        {{ agentDisplayName(agent.endpoint) }}
                     </span>
-                    <span v-if="agent.endpoint === 'current'">{{ $t("currentEndpoint") }}</span>
-                    <span v-else>{{ agent.endpoint }}</span>
+                    <span v-if="isAgentOnline(agent.endpoint)" class="badge bg-primary ms-auto me-2 stack-count">{{ agent.stacks.length }}</span>
+                    <span v-else class="badge bg-secondary ms-auto me-2 stack-count">{{ $t("agentOffline") }}</span>
                 </div>
                 <StackListItem
                     v-for="(item, index) in agent.stacks"
-                    v-show="$root.agentCount === 1 || !closedAgents.get(agent.endpoint)" :key="index" :stack="item" :isSelectMode="selectMode"
+                    v-show="!isAgentCollapsed(agent.endpoint)" :key="index" :stack="item" :isSelectMode="selectMode"
                     :isSelected="isSelected" :select="select" :deselect="deselect"
                 />
             </div>
@@ -108,6 +109,20 @@ export default {
             },
             closedAgents: new Map(),
         };
+    },
+    created() {
+        // Restore saved folder collapsed state
+        try {
+            const storage = window.localStorage.getItem("agentFolderCollapsed");
+            if (storage) {
+                const obj = JSON.parse(storage);
+                for (const endpoint in obj) {
+                    this.closedAgents.set(endpoint, obj[endpoint]);
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
     },
     computed: {
         /**
@@ -295,6 +310,69 @@ export default {
         window.removeEventListener("scroll", this.onScroll);
     },
     methods: {
+        /**
+         * Is the given agent folder collapsed
+         * @param {string} endpoint Agent endpoint
+         * @returns {boolean} Whether the folder is collapsed
+         */
+        isAgentCollapsed(endpoint) {
+            return this.closedAgents.get(endpoint) ?? this.isDefaultCollapsed(endpoint);
+        },
+
+        /**
+         * Should this endpoint be collapsed by default (i.e. no saved state yet)
+         * @param {string} endpoint Agent endpoint
+         * @returns {boolean} Default collapsed state
+         */
+        isDefaultCollapsed(endpoint) {
+            // Local host is expanded by default, remote agents are collapsed by default
+            return endpoint !== "current";
+        },
+
+        /**
+         * Is the given agent online
+         * @param {string} endpoint Agent endpoint
+         * @returns {boolean} Whether the agent is online
+         */
+        isAgentOnline(endpoint) {
+            if (endpoint === "current") {
+                return true;
+            }
+            return this.$root.agentStatusList[endpoint] === "online";
+        },
+
+        /**
+         * Toggle the collapsed state of an agent folder
+         * @param {string} endpoint Agent endpoint
+         * @returns {void}
+         */
+        toggleAgent(endpoint) {
+            this.closedAgents.set(endpoint, !this.isAgentCollapsed(endpoint));
+
+            // Save collapsed state to localStorage
+            const storage = {};
+            for (const [ k, v ] of this.closedAgents.entries()) {
+                storage[k] = v;
+            }
+            window.localStorage.setItem("agentFolderCollapsed", JSON.stringify(storage));
+        },
+
+        /**
+         * Get the display name for an agent folder
+         * @param {string} endpoint Agent endpoint
+         * @returns {string} Display name
+         */
+        agentDisplayName(endpoint) {
+            if (endpoint === "current") {
+                return this.$t("currentEndpoint");
+            }
+            const agent = this.$root.agentList[endpoint];
+            if (!agent) {
+                return endpoint;
+            }
+            return agent.name && agent.name !== "" ? agent.name : endpoint;
+        },
+
         /**
          * Handle user scroll
          * @returns {void}
@@ -491,5 +569,57 @@ export default {
     display: flex;
     align-items: center;
     user-select: none;
+}
+
+.folder-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    margin: 2px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: $dark-font-color3;
+    transition: background-color ease-in-out 0.15s;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+
+        .dark & {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    .folder-icon {
+        color: #e8a33d;
+        width: 18px;
+    }
+
+    &.folder-open .folder-icon {
+        color: #e8a33d;
+    }
+
+    &.folder-dead {
+        opacity: 0.6;
+
+        .folder-icon {
+            color: #888;
+        }
+    }
+
+    .folder-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .stack-count {
+        flex-shrink: 0;
+        font-size: 11px;
+    }
 }
 </style>
