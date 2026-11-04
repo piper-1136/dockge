@@ -29,7 +29,13 @@
 
             <template v-else-if="Object.keys(entry.ports).length > 0">
                 <div class="port-grid">
-                    <div v-for="(inUse, port) in sortedPorts(entry.ports)" :key="port" class="port-cell" :class="inUse ? 'port-in-use' : 'port-available'" :title="`${port}: ${inUse ? $t('portInUse') : $t('portAvailable')}`">
+                    <div
+                        v-for="[port, inUse] in sortedPorts(entry.ports)"
+                        :key="port"
+                        class="port-cell"
+                        :class="inUse ? 'port-in-use' : 'port-available'"
+                        :title="`${port}: ${inUse ? $t('portInUse') : $t('portAvailable')}`"
+                    >
                         <div class="port-number">{{ port }}</div>
                         <div class="port-status">{{ inUse ? $t("portInUse") : $t("portAvailable") }}</div>
                     </div>
