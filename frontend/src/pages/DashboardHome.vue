@@ -51,8 +51,8 @@
                             <!-- Agent Display Name -->
                             <template v-if="$root.agentStatusList[endpoint]">
                                 <span v-if="endpoint === '' && agentItem.name === ''" class="badge bg-secondary me-2">Current</span>
-                                <span v-else-if="agentItem.name === ''" :href="agentItem.url" class="me-2">{{ endpoint }}</span>
-                                <span v-else :href="agentItem.url" class="me-2">{{ agentItem.name }}</span>
+                                <span v-else-if="agentItem.name && agentItem.name !== ''" :href="agentItem.url" class="me-2">{{ agentItem.name }}</span>
+                                <span v-else :href="agentItem.url" class="me-2">{{ agentDisplayName(endpoint, agentItem) }}</span>
                             </template>
 
                             <!-- Edit Name  -->
@@ -186,6 +186,26 @@ export default {
     },
 
     methods: {
+
+        /**
+         * Get a display name for an agent, falling back to endpoint or URL host
+         * @param {string} endpoint Agent endpoint key from v-for
+         * @param {object} agentItem Agent list item
+         * @returns {string} Display name
+         */
+        agentDisplayName(endpoint, agentItem) {
+            if (agentItem.endpoint && agentItem.endpoint !== "") {
+                return agentItem.endpoint;
+            }
+            if (endpoint && endpoint !== "") {
+                return endpoint;
+            }
+            try {
+                return new URL(agentItem.url).host;
+            } catch (e) {
+                return agentItem.url;
+            }
+        },
 
         addAgent() {
             this.connectingAgent = true;
