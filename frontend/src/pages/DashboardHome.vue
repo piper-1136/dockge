@@ -33,9 +33,6 @@
                     </div>
 
                     <button class="btn-normal btn mb-4" @click="convertDockerRun">{{ $t("Convert to Compose") }}</button>
-
-                    <!-- Port Status (local + all remote agents) -->
-                    <PortStatus />
                 </div>
                 <!-- Right -->
                 <div class="col-md-5">
@@ -116,11 +113,10 @@
 
 <script>
 import { statusNameShort } from "../../../common/util-common";
-import PortStatus from "../components/PortStatus.vue";
 
 export default {
     components: {
-        PortStatus,
+
     },
     props: {
         calculatedHeight: {

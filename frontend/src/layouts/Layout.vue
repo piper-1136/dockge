@@ -33,12 +33,6 @@
                     </router-link>
                 </li>
 
-                <li v-if="$root.loggedIn" class="nav-item me-2">
-                    <router-link to="/ports" class="nav-link">
-                        <font-awesome-icon icon="network-wired" /> {{ $t("ports") }}
-                    </router-link>
-                </li>
-
                 <li v-if="$root.loggedIn" class="nav-item">
                     <div class="dropdown dropdown-profile-pic">
                         <div class="nav-link" data-bs-toggle="dropdown">
