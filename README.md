@@ -6,6 +6,11 @@
 
 A fancy, easy-to-use and reactive self-hosted docker compose.yaml stack-oriented manager.
 
+> ⚡ **Enhanced Edition** — This fork adds extra capabilities on top of the original Dockge:
+> - 🖥️ **Port Status Dashboard** — Display the TCP port occupancy (e.g. 4000-4020) for the local host and all remote agents right on the home page.
+> - 🗂️ **Foldered Agent List** — Remote hosts are shown as collapsible folders in the left stack list, so you can expand/collapse each agent at will.
+> - 🔌 **Robust remote agent display** — Remote agent names/URLs are always shown correctly in the UI (even if no friendly name is set).
+
 [![GitHub Repo stars](https://img.shields.io/github/stars/louislam/dockge?logo=github&style=flat)](https://github.com/louislam/dockge) [![Docker Pulls](https://img.shields.io/docker/pulls/louislam/dockge?logo=docker)](https://hub.docker.com/r/louislam/dockge/tags) [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/louislam/dockge/latest?label=docker%20image%20ver.)](https://hub.docker.com/r/louislam/dockge/tags) [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/louislam/dockge/master?logo=github)](https://github.com/louislam/dockge/commits/master/)
 
 <img src="https://github.com/louislam/dockge/assets/1336778/26a583e1-ecb1-4a8d-aedf-76157d714ad7" width="900" alt="" />
@@ -29,6 +34,46 @@ View Video: https://youtu.be/AWAlOQeNpgU?t=48
 - 🐣 Easy-to-use & fancy UI - If you love Uptime Kuma's UI/UX, you will love this one too
 
 ![](https://github.com/louislam/dockge/assets/1336778/89fc1023-b069-42c0-a01c-918c495f1a6a)
+
+## ✨ Enhanced Features (This Fork)
+
+### 🖥️ Port Status Dashboard
+
+View the TCP port occupancy for the local host **and** all remote agents directly on the **Home** page.
+
+- Port range: `4000` – `4020` (default).
+- Each host is shown as a card with color-coded port chips:
+  - 🟢 Green = available
+  - 🔴 Red = in use
+- Click the refresh button to re-read the data.
+
+The port information is **not** probed at runtime by Dockge. Instead, you collect it on each host over SSH and write it into a single `data/ports.json` file. Dockge simply parses this file and renders it.
+
+`data/ports.json` format (one entry per host, top-level keys are hostnames):
+
+```json
+{
+  "amd":   { "4000": true,  "4001": false, "4002": true },
+  "piper": { "4000": false, "4001": true,  "4002": false }
+}
+```
+
+- `true` = port is in use (red), `false` = available (green).
+- With remote agents configured, Dockge merges the file from every online agent, so multiple hosts can be displayed at once.
+
+### 🗂️ Foldered Agent List
+
+When multiple remote agents are configured, the left stack list shows each host as a **folder**. Click a folder to expand or collapse that host's stacks.
+
+- Local host ("Current") is expanded by default.
+- Remote hosts are collapsed by default.
+- Collapsed state is remembered across sessions.
+
+### 🔌 Robust Remote Agent Display
+
+Remote agent names/URLs are always shown correctly in the UI (agent selector, agent list, etc.), even when no friendly name is set for the agent.
+
+---
 
 ## 🔧 How to Install
 
