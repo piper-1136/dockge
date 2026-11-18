@@ -83,7 +83,7 @@ export class AgentManager {
         bean.url = url;
         bean.username = username;
         bean.password = password;
-        bean.name = name;
+        bean.name = name || "";
         await R.store(bean);
         return bean;
     }
