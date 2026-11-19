@@ -1,2 +1,3 @@
 增强了远端管理的功能，文件夹显示/远端别名等，增加静态的端口显示，需要提前准备好json配置。
 增加docker镜像地址，避免国内构建失败
+https://github.com/piper-1136/dockge/blob/master/Snipaste.png
